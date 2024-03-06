@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Highstock Example</title>
+
+		<style type="text/css">
+#container {
+    height: 400px;
+    min-width: 310px;
+}
+
+		</style>
+	</head>
+	<body>
+<script src="../../code/highstock.js"></script>
+<script src="../../code/modules/exporting.js"></script>
+<script src="../../code/modules/export-data.js"></script>
+<script src="../../code/modules/accessibility.js"></script>
+
+
+<div id="container"></div>
+
+
+		<script type="text/javascript">
+(async () => {
+
+    const names = ['MSFT', 'AAPL', 'GOOG'];
+
+    /**
+     * Create the chart when all data is loaded
+     * @return {undefined}
+     */
+    function createChart(series) {
+
+        Highcharts.stockChart('container', {
+
+            rangeSelector: {
+                selected: 4
+            },
+
+            yAxis: {
+                labels: {
+                    format: '{#if (gt value 0)}+{/if}{value}%'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 2,
+                    color: 'silver'
+                }]
+            },
+
+            plotOptions: {
+                series: {
+                    compare: 'percent',
+                    showInNavigator: true
+                }
+            },
+
+            tooltip: {
+                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
+                valueDecimals: 2,
+                split: true
+            },
+
+            series
+        });
+
+    }
+
+    const promises = names.map(name => new Promise(resolve => {
+        (async () => {
+            const data = await fetch(
+                'https://cdn.jsdelivr.net/gh/highcharts/highcharts@v7.0.0/' +
+                'samples/data/' + name.toLowerCase() + '-c.json'
+            )
+                .then(response => response.json());
+            resolve({ name, data });
+        })();
+    }));
+
+    const series = await Promise.all(promises);
+    createChart(series);
+
+})();
+		</script>
+	</body>
+</html>

@@ -1,0 +1,462 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+        <!-- <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script> -->
+        <script src="https://cdn.bootcss.com/moment.js/2.18.1/moment-with-locales.min.js"></script>
+        <!-- CDN 引入 Day.js -->
+        <!-- <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script> -->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.7"></script> -->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script> -->
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/plugin/customParseFormat.min.js"></script> -->
+        <!-- bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <script src="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+
+
+
+        <!-- popper -->
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+        <!-- 1. Link Vue Javascript -->
+        <!-- <script src='https://unpkg.com/vue/dist/vue.js'></script> -->
+
+        <!-- Vue  -->
+        <!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
+        <!-- VCalendar (automatically installed) -->
+        <!-- <script src="https://unpkg.com/v-calendar"></script> -->
+
+        <script>
+            // dayjs().format()
+            // let customParseFormat = require('dayjs/plugin/customParseFormat')
+            // import dayjs from "dayjs";
+            // import customParseFormat from "dayjs/plugin/customParseFormat";
+            // dayjs.extend(customParseFormat);
+        </script>
+		<title>Show Stocks</title>
+
+		<style type="text/css">
+#container {
+    height: 730px;
+}
+
+@media screen and (max-width: 600px) {
+    #container {
+        height: 400px;
+    }
+}
+
+		</style>
+	</head>
+<body>
+<link rel="stylesheet" type="text/css" href="https://code.highcharts.com/css/stocktools/gui.css">
+<link rel="stylesheet" type="text/css" href="https://code.highcharts.com/css/annotations/popup.css">
+
+{% load static %}
+<script src="{% static 'catalog/Highcharts-Stock-11.3.0/code/highstock.js' %}"></script>
+
+<script src="{% static '/catalog/Highcharts-Stock-11.3.0/code/indicators/indicators-all.js'%}"></script>
+<script src="{% static '/catalog/Highcharts-Stock-11.3.0/code/modules/drag-panes.js'%}"></script>
+
+<script src="{% static '/catalog/Highcharts-Stock-11.3.0/code/modules/annotations-advanced.js'%}"></script>
+<script src="{% static '/catalog/Highcharts-Stock-11.3.0/code/modules/price-indicator.js'%}"></script>
+<script src="{% static '/catalog/Highcharts-Stock-11.3.0/code/modules/full-screen.js'%}"></script>
+
+<script src="{% static '/catalog/Highcharts-Stock-11.3.0/code/modules/stock-tools.js'%}"></script>
+
+<script src="{% static '/catalog/Highcharts-Stock-11.3.0/code/modules/heikinashi.js'%}"></script>
+<script src="{% static '/catalog/Highcharts-Stock-11.3.0/code/modules/hollowcandlestick.js'%}"></script>
+<script src="{% static '/catalog/Highcharts-Stock-11.3.0/code/modules/accessibility.js'%}"></script>
+<script src="{% static '/catalog/Highcharts-Stock-11.3.0/code/highcharts-more.js'%}"></script>
+
+<!-- <h3>{{latest_date}}</h3> -->
+<!-- <h3>{{price_volume_data}} {{price_volume_data.0}}</h3> -->
+<!-- <h3>{{fshr_data}}</h3> -->
+<form method="POST" action="{% url 'return_date' %}" style="padding-top: 0.2%; padding-left: 0.2%;">
+  {% csrf_token %}
+  <label for="dropdown">選擇日期:</label>
+  <!-- <select name="dropdown" id="dropdown">
+    {% for select_option in select_date %}
+    <option value="{{select_option}}" {% if latest_date == select_option %} selected {% endif %}>{{select_option}}</option>
+    {% endfor %}
+  </select> -->
+  <input type="date" name="datepicker" value="{{latest_date}}">
+  <!-- <br> -->
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" name="price_volume_check" {% if price_volume_data.0 == 'on' %} checked {% endif %}>
+        <label class="form-check-label">量價過濾</label>
+    </div>
+    <div class="form-group" style="padding-top: 0.2%;">
+        <label style="width:15%;padding-left: 1.5%;">成交量門檻(張):</label>
+        <input type="text" name="volume_threshold" value="{{price_volume_data.1}}" style="width:10%;">
+    </div>
+    <div class="form-group" style="padding-top: 0.2%;">
+        <label style="width:15%;padding-left: 1.5%;">漲跌幅門檻(%):</label>
+        <input type="text" name="gain_percentage_threshold" value="{{price_volume_data.2}}" style="width:10%;">
+    </div>
+
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" name="fshr_check" {% if fshr_data.0 == 'on' %} checked {% endif %}>
+        <label class="form-check-label">外資買賣超累積</label>
+    </div>
+    <div class="form-group">
+        <label style="width:15%;padding-left: 1.5%;">外資買賣超門檻(%):</label>
+        <input type="text" name="fshr_gain_threshold" style="width:10%;" value="{{fshr_data.1}}">
+    </div>
+    <div class="form-group" style="padding-top: 0.2%;">
+        <label style="width:15%;padding-left: 1.5%;">外資買賣超累積天數(天):</label>
+        <input type="text" name="fshr_culmulate_day" style="width:10%;" value="{{fshr_data.2}}">
+    </div>
+    <div class="form-check" style="padding-top: 0.2%;">
+        <input type="checkbox" class="form-check-input" name="big_player_check" {% if big_player_data.0 == 'on' %} checked {% endif %}>
+        <label class="form-check-label" style="width:13.5%;">大戶持股率門檻(%):</label>
+        <input type="text" name="big_player_threshold" style="width:10%;" value="{{big_player_data.1}}">
+    </div>
+    <div style="padding-top: 0.2%; padding-left: 0.2%;">
+  <!-- <button type="submit" name="button" value="select_date_btn">送出</button> -->
+        <button type="submit" class="btn btn-primary" name="button" value="select_date_btn">送出</button>
+    </div>
+</form>
+
+<template>
+  <!-- <VDatePicker v-model="date" mode="date" /> -->
+</template>
+
+<script setup>
+// import { ref } from 'vue';
+// const date = ref(new Date());
+</script>
+
+<h3 id="title_date" style="text-align: center;">{{latest_date}} 股票篩選(共{{company_number}}支)</h3>
+<!-- <script type="text/javascript">
+    let originalDate = "{{latest_date}}"
+    console.log(originalDate)
+    let trim_date = originalDate.substring(0, originalDate.lastIndexOf(',')).trim().replace(".","").replace(",","");
+    console.log(trim_date)
+    document.getElementById("title_date").innerHTML = trim_date + " 股票篩選"
+</script> -->
+{% for company, latest_data, ratio, company_name, shares_issued, finance_report, data in company_data %}
+<div>
+<a href="https://goodinfo.tw/tw/StockDetail.asp?STOCK_ID={{company.company_code}}" target="_blank">
+{{company.company_code}} {{company_name}}</a>
+<i>收盤價：{{latest_data.closing_price}}, 成交量：{{latest_data.volume}}張, 總發行張數：{{shares_issued}}張, 大戶持股率(400張>)：{{ratio}}% , 漲跌：{{latest_data.price_change}}, 漲跌幅：{{latest_data.gain_percentage}}%</i>
+<br>
+
+<table class="table table-striped table-hover table-sm" style="table-layout: fixed; width: 25%;">
+    <thead>
+    <tr>
+      <th scope="col">年/季</th>
+      <th scope="col">EPS累計(元)</th>
+    </tr>
+  </thead>
+  <tbody>
+{% for finance_report_data in finance_report %}
+    <tr>
+        <td>{{finance_report_data.year}}Q{{finance_report_data.season}}</td>
+        <td>{{finance_report_data.EPS}}</td>
+    </tr>
+    <!-- <i>{{finance_report_data.year}}Q{{finance_report_data.season}} EPS: {{finance_report_data.EPS}}</i><br> -->
+{% endfor %}
+  </tbody>
+</table>
+<div id="{{company.company_code}}" class="chart"></div>
+		<script type="text/javascript">
+(async () => {
+    // var customParseFormat = require('dayjs/plugin/customParseFormat')
+    // dayjs.extend(customParseFormat)
+    // Load the dataset
+    // const data = await fetch(
+    //     'https://demo-live-data.highcharts.com/aapl-ohlcv.json'
+    // ).then(response => response.json());
+    
+    // console.log(dayjs('2023/9/12').format('MMM. D, YYYY, h a'))
+    // split the data set into ohlc and volume
+    const ohlc = [],volume = [],line = [], fshr = [], price_change = [], price_change_percentage = [], _5MA = [], _10MA = [];
+    let closing_price, open_price, high_price, low_price, org_date, date, originalDate, tmp_str, foreign_share_holding_ratio, price_change_value, _5MA_price, _10MA_price;
+    // let date_string;
+    // let temp_str = "Aug. 21, 2023, 8 a.m.".replace("a.m.","am").replace("p.m.","pm").replace(".","").trim();
+    // console.log(temp_str)
+    // let format_str = dayjs(temp_str, "MMM D, YYYY, h a", true)
+    // console.log(format_str)
+    {% for everyday_data in data %}
+        // date_string = "{{everyday_data.data_date}}".replace("a.m.","am").replace("p.m.","pm").replace(".","").trim()
+        date = Number("{{everyday_data.data_date}}")
+        // date = originalDate.substring(0, originalDate.lastIndexOf(',')).trim().replace(".","").replace(",","");
+        // tmp_str = date.split(" ");
+        // date = tmp_str[1] + " " + tmp_str[0] + " " + tmp_str[2]
+
+        // org_date = dayjs(date_string,'MMM D, YYYY, h a', true)
+        // console.log(typeof date_string)
+        // console.log(dayjs(date_string,'MMM D, YYYY, h a', true).isValid())
+        // console.log(date_string)
+        // console.log(org_date)
+        // date = org_date.format("YYYY/M/D")
+        // console.log(date)
+        if ("{{everyday_data.closing_price}}" == "None") {
+            closing_price = 0;
+        }else{
+            closing_price = {{everyday_data.closing_price}}
+        }
+        if ("{{everyday_data.open_price}}" == "None") {
+            open_price = 0;
+        }else{
+            open_price = {{everyday_data.open_price}}
+        }
+        if ("{{everyday_data.high_price}}" == "None") {
+            high_price = 0;
+        }else{
+            high_price = {{everyday_data.high_price}}
+        }
+        if ("{{everyday_data.low_price}}" == "None") {
+            low_price = 0;
+        }else{
+            low_price = {{everyday_data.low_price}}
+        }
+
+        if ("{{everyday_data.5MA}}" == "None") {
+            _5MA_price = 0;
+        }else{
+            _5MA_price = {{everyday_data.5MA}}
+        }
+        if ("{{everyday_data.10MA}}" == "None") {
+            _10MA_price = 0;
+        }else{
+            _10MA_price = {{everyday_data.10MA}}
+        }
+
+        if ("{{everyday_data.foreign_share_holding_ratio}}" == "None") {
+            foreign_share_holding_ratio = 0;
+        }else{
+            foreign_share_holding_ratio = {{everyday_data.foreign_share_holding_ratio}}
+
+            fshr.push([
+                date,
+                foreign_share_holding_ratio
+            ])
+        }
+
+        if ("{{everyday_data.price_change}}" == "None") {
+            // price_change = 0;
+            // price_change_value = 0
+        }else{
+            // price_change_value = "{{everyday_data.price_change}}"
+            price_change_str = "{{everyday_data.price_change}}";
+            price_change.push([
+                date,
+                parseFloat(price_change_str)
+            ])
+        }
+        if ("{{everyday_data.gain_percentage}}" == "None") {
+            // price_change = 0;
+            //price_change_value = 0
+        }else{
+            // price_change_value = "{{everyday_data.price_change}}"
+            price_change_percentage_str = "{{everyday_data.gain_percentage}}";
+            price_change_percentage.push([
+                date,
+                parseFloat(price_change_percentage_str)
+            ])
+        }
+        ohlc.push([
+            date, // the date
+            open_price, // open
+            high_price, // high
+            low_price, // low
+            closing_price // close
+        ]);
+
+        volume.push([
+            date, // the date
+            {{everyday_data.volume}} // the volume
+        ]);
+
+        line.push([
+            date, // the date
+            closing_price // close
+        ])
+
+        _5MA.push([
+            date,
+            _5MA_price
+        ])
+
+        _10MA.push([
+            date,
+            _10MA_price
+        ])
+    {% endfor %}
+
+    Highcharts.stockChart('{{company.company_code}}', {
+        // chart: {
+        //     type: 'line',
+        //     width: 300,
+        // },
+        legend: {
+            enabled: true,
+            align: 'center',
+            verticalAlign: 'top'
+        },
+        yAxis: [{
+            labels: {
+                align: 'left'
+            },
+            title: {
+                text: "價格（元）"
+            },
+            height: '80%',
+            resize: {
+                enabled: true
+            }
+        }, {
+            labels: {
+                align: 'left',
+                format: '{text}%'
+            },
+            title: {
+                text: "外資持股率"
+            },
+            height: '80%',
+            resize: {
+                enabled: true
+            }
+        }, {
+            labels: {
+                align: 'left'
+            },
+            top: '80%',
+            height: '20%',
+            offset: 0
+        }, {
+            labels: {
+                // align: 'left',
+                enabled: false
+            },
+            height: '80%',
+            resize: {
+                enabled: false
+            }
+        }],
+        tooltip: {
+            shape: 'square',
+            headerShape: 'callout',
+            borderWidth: 0,
+            shadow: false,
+            positioner: function (width, height, point) {
+                const chart = this.chart;
+                let position;
+
+                if (point.isHeader) {
+                    position = {
+                        x: Math.max(
+                            // Left side limit
+                            chart.plotLeft,
+                            Math.min(
+                                point.plotX + chart.plotLeft - width / 2,
+                                // Right side limit
+                                chart.chartWidth - width - chart.marginRight
+                            )
+                        ),
+                        y: point.plotY
+                    };
+                } else {
+                    position = {
+                        x: point.series.chart.plotLeft,
+                        y: point.series.yAxis.top - chart.plotTop
+                    };
+                }
+                // console.log(this)
+
+                return position;
+            }
+      //       ,formatter: function() {
+      //   console.log(this)
+      //   // console.log('<br />fshr: ' this.points[2].y + '<br />price_change: ' this.points[3].y)
+
+      //   return 'O: ' + this.point.open + '<br />' + ' C: ' + this.point.close + '<br />H: ' + this.point.high + '<br />L: ' + this.point.low //+ '<br />fshr: ' + this.points[2].y + '<br />price_change: ' + this.points[3].y
+      // }
+        },
+        series: [
+        {
+            type: 'candlestick',
+            upColor: 'red',
+            color: 'green',
+            id: '{{company.company_code}}-ohlc',
+            name: '{{company.company_code}} {{company_name}} K線',
+            data: ohlc
+        }, 
+        {
+            type: 'column',
+            id: '{{company.company_code}}-volume',
+            name: '{{company.company_code}} {{company_name}} 成交量',
+            data: volume,
+            yAxis: 2
+        }],
+        responsive: {
+            rules: [{
+                condition: {
+                    maxWidth: 800
+                },
+                chartOptions: {
+                    rangeSelector: {
+                        inputEnabled: false
+                    }
+                }
+            }]
+        }
+    });
+    var chart = $('#{{company.company_code}}').highcharts();
+
+    chart.addSeries({
+        name: '漲跌幅(%)',
+        color: 'transparent',
+        borderColor: 'transparent',
+        showInLegend: false,
+        data: price_change_percentage,
+        yAxis:3
+        // visible:false
+        // visible:true
+    });
+
+    chart.addSeries({
+        name: '外資持股比',
+        data: fshr,
+        yAxis:1
+    });
+
+    chart.addSeries({
+        name: '五日線',
+        data: _5MA
+    });
+
+    chart.addSeries({
+        name: '十日線',
+        data: _10MA
+    });
+
+    chart.addSeries({
+        name: '漲跌',
+        color: 'transparent',
+        borderColor: 'transparent',
+        showInLegend: false,
+        data: price_change,
+        yAxis:3
+        // visible:false
+        // visible:true
+    });
+    
+    // var chart = $('#{{company.company_code}}').highcharts();
+    // chart.addSeries({
+    //     name: 'closing_price',
+    //     data: line
+    // });
+})();
+		</script>
+</div>
+{% endfor %}
+	</body>
+</html>

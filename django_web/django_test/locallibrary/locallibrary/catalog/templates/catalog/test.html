@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>預呈現網頁位置</title>
+</head>
+<body>
+
+<h1>Data from MySQL View</h1>
+    <ul>
+        <li>{{latest_date}}</li>
+        {% for item in data_from_view %}
+            <li>{{ item.company_code }} {{ item.company_type}}</li>
+        {% endfor %}
+        {% for cp in overlap %}
+            <li>{{cp.company_code}}</li>
+        {% endfor %}
+        <!-- {% for company, latest_data, data in company_data %}
+            <span id="{{company.company_code}}">{{ data }}</span>
+            <script type="text/javascript">
+                // const datas = {{ data }};
+                // const company_code = {{company.company_code}}
+                // const datalength = datas[1].datalength;
+                document.getElementById("{{company.company_code}}").innerHTML = {{company.company_code}};
+                {% for everyday_data in data %}
+                    document.getElementById("{{company.company_code}}").innerHTML += {{latest_data.data_date}} + ", ";
+                {% endfor %}
+                // for(let i = 0; i < datalength; i+=1) {
+                    
+                //     document.getElementById(company_code).innerHTML += datas[1][i].closing_price;
+                // }
+            </script>
+            
+        {% endfor %} -->
+    </ul>
+</body>
+</html>
+
+
+
