@@ -1,0 +1,50 @@
+install mysql
+install mysql for python
+pip install twstock
+pip install lmxl
+
+
+django
+# 同步資料庫
+	python manage.py inspectdb > catalog/models.py
+	or
+	python manage.py inspectdb > locallibrary/models.py
+#讓外部連上網站<a href="url">link text</a>
+python3 manage.py runserver 0.0.0.0:8000
+
+python manage.py makemigrations
+python manage.py migrate
+
+mysql -u root -p -e "create database STOCK_INFO"
+
+every day update takes about 27 minutes
+
+挑選出來的股票配上日線圖（收盤價、成交量）
+	pip install pandas
+	pip install matplotlib
+V 檢查公司是否還存活
+	check_company_alive()
+update外資佔有比
+one more table for 100 data
+取得資本額
+docker mysql
+docker task
+website
+
+mysql中，每個條件設定一個view(table)
+
+檢查資料庫中收盤價是否有0，改成和前日相同
+
+踢掉十塊以下
+股數除一千
+
+2024/1/12
+新增table
+	gain_over_3_5 					//漲幅超過3.5%
+	monthly_avg_volume_over_2x		//成交量超過月均量2倍
+	over_100MA						//超過100日(20週)均線
+	company_history_calculate_data	//其他計算數值(百日均價、月均成交量等)
+
+2024/1/13
+把資料加入新增的table
+
